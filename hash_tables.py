@@ -26,6 +26,7 @@ class HashTable:
                     return bucket[1]
 
 
+
 ht = HashTable(3)
 ht.buckets
 [[], [], []]
