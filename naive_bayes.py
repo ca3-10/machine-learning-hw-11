@@ -36,6 +36,9 @@ class NaiveBayes:
 
             yes_scam = (self.yes_scam / self.total) * ((self.error_counts(error, 'Yes')) / self.yes_scam) * (self.link_counts(link, 'Yes') / self.yes_scam)
             no_scam = (self.no_scam / self.total) * ((self.error_counts(error, 'No')) / self.no_scam) * (self.link_counts(link, 'No') / self.no_scam)
+            
+            #print(yes_scam,"vs", no_scam)
+            
             prediction = max(yes_scam, no_scam)
             if prediction == yes_scam: 
                 scam.append('Yes')
@@ -44,11 +47,8 @@ class NaiveBayes:
         return scam
 
 
-
-        
-
 data = {'Scam': ['No', 'Yes', 'Yes', 'No', 'No', 'Yes', 'No', 'No', 'Yes', 'No'], 'Errors': ['No', 'Yes', 'Yes', 'No', 'No', 'Yes','Yes','No','Yes','No'], 'Links':['No', 'Yes', 'Yes','No', 'Yes','Yes','No','Yes', 'No','Yes']}
 un_data = {'Error': ['No', 'Yes', 'Yes', 'No'], 'Link' : ['No', 'Yes', 'No','Yes']}
 n = NaiveBayes(data)
-meep = n.classify(un_data)
-print(meep)
+scam = n.classify(un_data)
+print(scam)
