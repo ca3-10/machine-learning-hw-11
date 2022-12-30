@@ -176,4 +176,3 @@ for node in p:
     print(p[node])
     print(node.data_points)
     print()
-
