@@ -34,7 +34,8 @@ class Node:
         #right = points less than the best split
         self.right_data = self.point_counts(self.best_split[1], self.best_split[0], '>')
 
-
+        self.children = []
+        self.parent = None
     
     def get_shortbread_counts(self, array):
         shortbread_counts = 0
@@ -153,6 +154,8 @@ class DecisionTree:
             children = [Node(current_node.left_data), Node(current_node.right_data)]
 
             for child in children: 
+                current_node.children.append(child)
+                child.parent = current_node
                 if child.pure == True: 
                     continue
                 stack.push(child)
@@ -172,7 +175,3 @@ data = [['Shortbread',0.15,0.2],
 node = Node(data)
 tree = DecisionTree(data)
 p= tree.build_tree()
-for node in p: 
-    print(p[node])
-    print(node.data_points)
-    print()
