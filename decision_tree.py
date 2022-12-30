@@ -1,3 +1,4 @@
+
 class Stack:
     def __init__(self):
         self.elements = []
@@ -20,6 +21,7 @@ class Node:
         self.sugar_counts = self.num_data_points - self.shortbread_counts
 
         self.path = []
+        self.depth = 0
 
         self.pure = False
         if self.shortbread_counts == self.num_data_points or self.sugar_counts == self.num_data_points:
@@ -146,19 +148,30 @@ class DecisionTree:
         stack = Stack()
         stack.push(self.root)
         node_splits = {}
+        i = 0
         while len(stack.elements) != 0:
             current_node = stack.elements[-1]
             if current_node.pure == True: 
                 continue
+            
             node_splits[current_node] = current_node.best_split
             stack.pop()
+
+            #path
             left_node = Node(current_node.left_data)
             left_node.path = current_node.path.copy()
             left_node.path.append(current_node.best_split[0] + '<='+ str(current_node.best_split[1]))
 
+            #depth
+            left_node.depth = current_node.depth + 1
+
+            #path
             right_node = Node(current_node.right_data)
             right_node.path = current_node.path.copy()
             right_node.path.append(current_node.best_split[0] + '>' + str(current_node.best_split[1]))
+
+            #depth
+            right_node.depth = current_node.depth + 1
 
             children = [left_node, right_node]
 
@@ -168,6 +181,7 @@ class DecisionTree:
                 if child.pure == True: 
                     continue
                 stack.push(child)
+            
         return node_splits
 
 data = [['Shortbread',0.15,0.2],
@@ -185,8 +199,10 @@ node = Node(data)
 tree = DecisionTree(data)
 p= tree.tree
 
-first_node= list(p.keys())[2]
-print(first_node.children[0].data_points)
-print(first_node.children[0].path)
-print(first_node.children[1].data_points)
-print(first_node.children[1].path)
+first_node = list(p.keys())[0]
+print(first_node.depth)
+print('points',first_node.children[0].data_points)
+print('path',first_node.children[0].path)
+print('depth',first_node.children[0].depth)
+#print(first_node.children[1].data_points)
+#print(first_node.children[1].path)
