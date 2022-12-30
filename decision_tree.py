@@ -19,6 +19,8 @@ class Node:
         self.shortbread_counts = self.get_shortbread_counts(self.data_points)
         self.sugar_counts = self.num_data_points - self.shortbread_counts
 
+        self.path = []
+
         self.pure = False
         if self.shortbread_counts == self.num_data_points or self.sugar_counts == self.num_data_points:
             self.pure = True
@@ -28,15 +30,15 @@ class Node:
 
         self.best_split = self.best_split()
 
-        #left = points greater than equal to the best split
+        #left = points less than equal to the best split
         self.left_data = self.point_counts(self.best_split[1], self.best_split[0], '<=')
 
-        #right = points less than the best split
+        #right = points greater than the best split
         self.right_data = self.point_counts(self.best_split[1], self.best_split[0], '>')
 
         self.children = []
         self.parent = None
-    
+
     def get_shortbread_counts(self, array):
         shortbread_counts = 0
         for data_point in array: 
@@ -138,8 +140,8 @@ class DecisionTree:
     def __init__(self, data_points):
         self.data_points = data_points
         self.root = Node(data_points)
-        
-    
+        self.tree = self.build_tree()
+           
     def build_tree(self):
         stack = Stack()
         stack.push(self.root)
@@ -150,8 +152,15 @@ class DecisionTree:
                 continue
             node_splits[current_node] = current_node.best_split
             stack.pop()
+            left_node = Node(current_node.left_data)
+            left_node.path = current_node.path.copy()
+            left_node.path.append(current_node.best_split[0] + '<='+ str(current_node.best_split[1]))
 
-            children = [Node(current_node.left_data), Node(current_node.right_data)]
+            right_node = Node(current_node.right_data)
+            right_node.path = current_node.path.copy()
+            right_node.path.append(current_node.best_split[0] + '>' + str(current_node.best_split[1]))
+
+            children = [left_node, right_node]
 
             for child in children: 
                 current_node.children.append(child)
@@ -174,4 +183,10 @@ data = [['Shortbread',0.15,0.2],
 
 node = Node(data)
 tree = DecisionTree(data)
-p= tree.build_tree()
+p= tree.tree
+
+first_node= list(p.keys())[2]
+print(first_node.children[0].data_points)
+print(first_node.children[0].path)
+print(first_node.children[1].data_points)
+print(first_node.children[1].path)
