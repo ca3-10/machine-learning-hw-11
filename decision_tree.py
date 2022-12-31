@@ -41,6 +41,10 @@ class Node:
         self.children = []
         self.parent = None
 
+        self.prediction = 'Sugar' 
+        if self.shortbread_counts > self.sugar_counts:
+            'Shortbread'
+
     def get_shortbread_counts(self, array):
         shortbread_counts = 0
         for data_point in array: 
@@ -139,7 +143,8 @@ class Node:
                     return ('y', best_y_split)
                     
 class DecisionTree:
-    def __init__(self, data_points):
+    def __init__(self, data_points, max_depth):
+        self.max_depth = max_depth
         self.data_points = data_points
         self.root = Node(data_points)
         self.tree = self.build_tree()
@@ -147,20 +152,25 @@ class DecisionTree:
     def build_tree(self):
         stack = Stack()
         stack.push(self.root)
-        node_splits = {}
-        i = 0
+        nodes = {self.root: []}
+    
         while len(stack.elements) != 0:
+ 
             current_node = stack.elements[-1]
+
+            #if node is pure or max depth is reached don't split
             if current_node.pure == True: 
                 continue
-            
-            node_splits[current_node] = current_node.best_split
+            if current_node.depth == self.max_depth:
+                continue
+
             stack.pop()
 
             #path
             left_node = Node(current_node.left_data)
             left_node.path = current_node.path.copy()
             left_node.path.append(current_node.best_split[0] + '<='+ str(current_node.best_split[1]))
+            nodes[left_node] = left_node.path
 
             #depth
             left_node.depth = current_node.depth + 1
@@ -169,6 +179,7 @@ class DecisionTree:
             right_node = Node(current_node.right_data)
             right_node.path = current_node.path.copy()
             right_node.path.append(current_node.best_split[0] + '>' + str(current_node.best_split[1]))
+            nodes[right_node] = right_node.path
 
             #depth
             right_node.depth = current_node.depth + 1
@@ -178,11 +189,20 @@ class DecisionTree:
             for child in children: 
                 current_node.children.append(child)
                 child.parent = current_node
+
+                #if child is pure or max depth is reached don't split
                 if child.pure == True: 
+                    continue
+                if child.depth == self.max_depth:
                     continue
                 stack.push(child)
             
-        return node_splits
+        return nodes
+
+    def predict(self, data_point):
+        
+
+
 
 data = [['Shortbread',0.15,0.2],
         ['Shortbread',0.15,0.3],
@@ -195,14 +215,14 @@ data = [['Shortbread',0.15,0.2],
         ['Sugar',0.15,0.4],
         ['Sugar',0.25,0.35]]
 
-node = Node(data)
-tree = DecisionTree(data)
-p= tree.tree
-
-first_node = list(p.keys())[0]
-print(first_node.depth)
-print('points',first_node.children[0].data_points)
-print('path',first_node.children[0].path)
-print('depth',first_node.children[0].depth)
+#node = Node(data)
+#tree = DecisionTree(data, 6)
+#p= tree.tree
+#first_node = list(p.keys())[0]
+#print(first_node.prediction)
+#print(first_node.depth)
+#print('points',first_node.children[0].data_points)
+#print('path',first_node.children[0].path)
+#print('depth',first_node.children[0].depth)
 #print(first_node.children[1].data_points)
 #print(first_node.children[1].path)
