@@ -245,22 +245,24 @@ data_values = [
         ['Sugar',0.25,0.35]]
 
 
-count = 0
-for i in range(len(data_values)):
-    current_point = data_values[i]
-    current_point_classification = current_point[0]
 
-    data_values.pop(i)
-    tree = DecisionTree(data_values, 2)
+k = 0
+current_point = data_values[k]
+current_point_classification = current_point[0]
+print(current_point)
 
-    prediction = tree.predict([current_point[1], current_point[2]])
+data_values.pop(k)
+tree = DecisionTree(data_values, 3)
+for nodes in tree.nodes: 
+    print(nodes.path)
+    print(nodes.prediction)
+
+prediction = tree.predict([current_point[1], current_point[2]])
     
     
-    if current_point_classification == prediction:
-    
-        count += 1
+if current_point_classification == prediction:
+    print('correct')
         
-    data_values.insert(i, current_point)
+
     
 
-print(count)
