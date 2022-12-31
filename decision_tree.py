@@ -20,6 +20,13 @@ class Node:
         self.shortbread_counts = self.get_shortbread_counts(self.data_points)
         self.sugar_counts = self.num_data_points - self.shortbread_counts
 
+        self.prediction = 'Sugar' 
+        if self.shortbread_counts > self.sugar_counts:
+            self.prediction = 'Shortbread'
+
+        self.children = []
+        self.parent = None
+
         self.path = []
         self.depth = 0
 
@@ -37,13 +44,6 @@ class Node:
 
         #right = points greater than the best split
         self.right_data = self.point_counts(self.best_split[1], self.best_split[0], '>')
-
-        self.children = []
-        self.parent = None
-
-        self.prediction = 'Sugar' 
-        if self.shortbread_counts > self.sugar_counts:
-            'Shortbread'
 
     def get_shortbread_counts(self, array):
         shortbread_counts = 0
@@ -147,7 +147,7 @@ class DecisionTree:
         self.max_depth = max_depth
         self.data_points = data_points
         self.root = Node(data_points)
-        self.tree = self.build_tree()
+        self.nodes = self.build_tree()
            
     def build_tree(self):
         stack = Stack()
@@ -198,9 +198,20 @@ class DecisionTree:
                 stack.push(child)
             
         return nodes
-
-    def predict(self, data_point):
+    
+    #create a function to predict the class of a point based on the tree
+    def predict(self, point):
+        x = point[0]
+        y = point[1]
+        occurances = {}
+        for nodes in self.nodes:
+            if point in nodes.data_points:
+                occurances[node] = nodes.depth
         
+        deepest_occurance = max(occurances, key=occurances.get)
+        
+        return deepest_occurance.prediction
+
 
 
 
@@ -217,12 +228,4 @@ data = [['Shortbread',0.15,0.2],
 
 #node = Node(data)
 #tree = DecisionTree(data, 6)
-#p= tree.tree
-#first_node = list(p.keys())[0]
-#print(first_node.prediction)
-#print(first_node.depth)
-#print('points',first_node.children[0].data_points)
-#print('path',first_node.children[0].path)
-#print('depth',first_node.children[0].depth)
-#print(first_node.children[1].data_points)
-#print(first_node.children[1].path)
+#print(tree.nodes)
