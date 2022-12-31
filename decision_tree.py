@@ -28,7 +28,7 @@ class Node:
         self.parent = None
 
         self.path = []
-        self.depth = 0
+        self.depth = 1
 
         self.pure = False
         if self.shortbread_counts == self.num_data_points or self.sugar_counts == self.num_data_points:
@@ -153,12 +153,14 @@ class DecisionTree:
         stack = Stack()
         stack.push(self.root)
         nodes = {self.root: []}
+
+        if self.max_depth == 1: 
+            return nodes
     
         while len(stack.elements) != 0:
  
             current_node = stack.elements[-1]
 
-            #if node is pure or max depth is reached don't split
             if current_node.pure == True: 
                 continue
             if current_node.depth == self.max_depth:
@@ -169,7 +171,7 @@ class DecisionTree:
             #path
             left_node = Node(current_node.left_data)
             left_node.path = current_node.path.copy()
-            left_node.path.append(current_node.best_split[0] + '<='+ str(current_node.best_split[1]))
+            left_node.path.append([current_node.best_split[0],'<=',current_node.best_split[1]])
             nodes[left_node] = left_node.path
 
             #depth
@@ -178,7 +180,7 @@ class DecisionTree:
             #path
             right_node = Node(current_node.right_data)
             right_node.path = current_node.path.copy()
-            right_node.path.append(current_node.best_split[0] + '>' + str(current_node.best_split[1]))
+            right_node.path.append([current_node.best_split[0],'>',current_node.best_split[1]])
             nodes[right_node] = right_node.path
 
             #depth
@@ -199,23 +201,39 @@ class DecisionTree:
             
         return nodes
     
-    #create a function to predict the class of a point based on the tree
     def predict(self, point):
-        x = point[0]
+        x= point[0]
         y = point[1]
-        occurances = {}
-        for nodes in self.nodes:
-            if point in nodes.data_points:
-                occurances[node] = nodes.depth
-        
-        deepest_occurance = max(occurances, key=occurances.get)
-        
-        return deepest_occurance.prediction
+        current_node = self.root
+        while True:
+            
+            if current_node.pure == True:
+                return current_node.prediction
+            if current_node.children == []:
+                return current_node.prediction
 
+            if type(current_node.best_split) == tuple:
+                
+                if current_node.best_split[0] == 'x':
+                    if current_node.best_split[1] >= x:
+                        current_node = current_node.children[0]
+                    elif current_node.best_split[1] < x:
+                        current_node = current_node.children[1]
+                    else: 
+                        return current_node.prediction
 
+                elif current_node.best_split[0] == 'y':
+                    if current_node.best_split[1] >= y:
+                        current_node = current_node.children[0]
+                    elif current_node.best_split[1] < y:
+                        current_node = current_node.children[1]
+                    else: 
+                        return current_node.prediction
+                else:
+                    return current_node.prediction
 
-
-data = [['Shortbread',0.15,0.2],
+data_values = [
+    ['Shortbread',0.15,0.2],
         ['Shortbread',0.15,0.3],
         ['Shortbread',0.2,0.25],
         ['Shortbread',0.25,0.4],
@@ -226,6 +244,23 @@ data = [['Shortbread',0.15,0.2],
         ['Sugar',0.15,0.4],
         ['Sugar',0.25,0.35]]
 
-#node = Node(data)
-#tree = DecisionTree(data, 6)
-#print(tree.nodes)
+
+count = 0
+for i in range(len(data_values)):
+    current_point = data_values[i]
+    current_point_classification = current_point[0]
+
+    data_values.pop(i)
+    tree = DecisionTree(data_values, 2)
+
+    prediction = tree.predict([current_point[1], current_point[2]])
+    
+    
+    if current_point_classification == prediction:
+    
+        count += 1
+        
+    data_values.insert(i, current_point)
+    
+
+print(count)
