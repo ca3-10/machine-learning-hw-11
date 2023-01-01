@@ -1,4 +1,3 @@
-
 class Stack:
     def __init__(self):
         self.elements = []
@@ -86,61 +85,61 @@ class Node:
 
     def best_split(self):
 
-            x_splits = self.splits(sorted((list(dict.fromkeys([data_point[1] for data_point in self.data_points])))))
-            y_splits = self.splits(sorted((list(dict.fromkeys([data_point[2] for data_point in self.data_points])))))
+        x_splits = self.splits(sorted((list(dict.fromkeys([data_point[1] for data_point in self.data_points])))))
+        y_splits = self.splits(sorted((list(dict.fromkeys([data_point[2] for data_point in self.data_points])))))
 
-            x_impurities = {}
-            y_impurities = {}
+        x_impurities = {}
+        y_impurities = {}
 
-            for x in x_splits: 
-                if len(x_splits) == 0: 
-                    break
-                points_less_than_equal = self.point_counts(x, 'x', '<=')
-                points_greater_than = self.point_counts(x, 'x', '>')
+        for x in x_splits: 
+            if len(x_splits) == 0: 
+                break
+            points_less_than_equal = self.point_counts(x, 'x', '<=')
+            points_greater_than = self.point_counts(x, 'x', '>')
 
-                p_less_than_equal = len(points_less_than_equal)/self.num_data_points
-                p_greater_than = len(points_greater_than)/self.num_data_points
+            p_less_than_equal = len(points_less_than_equal)/self.num_data_points
+            p_greater_than = len(points_greater_than)/self.num_data_points
 
-                g_less_than_equal = self.gini_impurity(self.get_shortbread_counts(points_less_than_equal)/len(points_less_than_equal))
-                g_greater_than = self.gini_impurity(self.get_shortbread_counts(points_greater_than)/len(points_greater_than))
+            g_less_than_equal = self.gini_impurity(self.get_shortbread_counts(points_less_than_equal)/len(points_less_than_equal))
+            g_greater_than = self.gini_impurity(self.get_shortbread_counts(points_greater_than)/len(points_greater_than))
 
 
-                g_after = p_less_than_equal * g_less_than_equal + p_greater_than * g_greater_than
+            g_after = p_less_than_equal * g_less_than_equal + p_greater_than * g_greater_than
 
-                x_impurities[x] = self.g_before - g_after
+            x_impurities[x] = self.g_before - g_after
             
-            for y in y_splits: 
-                if len(y_splits) == 0: 
-                    break
-                points_less_than_equal = self.point_counts(y, 'y', '<=')
-                points_greater_than = self.point_counts(y, 'y', '>')
+        for y in y_splits: 
+            if len(y_splits) == 0: 
+                break
+            points_less_than_equal = self.point_counts(y, 'y', '<=')
+            points_greater_than = self.point_counts(y, 'y', '>')
 
-                p_less_than_equal = len(points_less_than_equal)/self.num_data_points
-                p_greater_than = len(points_greater_than)/self.num_data_points
+            p_less_than_equal = len(points_less_than_equal)/self.num_data_points
+            p_greater_than = len(points_greater_than)/self.num_data_points
 
-                g_less_than_equal = self.gini_impurity(self.get_shortbread_counts(points_less_than_equal)/len(points_less_than_equal))
-                g_greater_than = self.gini_impurity(self.get_shortbread_counts(points_greater_than)/len(points_greater_than))
-
-
-                g_after = p_less_than_equal * g_less_than_equal + p_greater_than * g_greater_than
-
-                y_impurities[y] = self.g_before - g_after
+            g_less_than_equal = self.gini_impurity(self.get_shortbread_counts(points_less_than_equal)/len(points_less_than_equal))
+            g_greater_than = self.gini_impurity(self.get_shortbread_counts(points_greater_than)/len(points_greater_than))
 
 
-            if len(x_splits) == 0:
-                best_y_split = max(y_impurities, key=y_impurities.get)
-                return ('y', best_y_split)
-            elif len(y_splits) == 0:
-                best_x_split = max(x_impurities, key=x_impurities.get)
+            g_after = p_less_than_equal * g_less_than_equal + p_greater_than * g_greater_than
+
+            y_impurities[y] = self.g_before - g_after
+
+
+        if len(x_splits) == 0:
+            best_y_split = max(y_impurities, key=y_impurities.get)
+            return ('y', best_y_split)
+        elif len(y_splits) == 0:
+            best_x_split = max(x_impurities, key=x_impurities.get)
+            return ('x', best_x_split)
+        else: 
+            best_x_split = max(x_impurities, key=x_impurities.get)
+            best_y_split = max(y_impurities, key=y_impurities.get)
+            
+            if x_impurities[best_x_split] > y_impurities[best_y_split]:
                 return ('x', best_x_split)
-            else: 
-                best_x_split = max(x_impurities, key=x_impurities.get)
-                best_y_split = max(y_impurities, key=y_impurities.get)
-            
-                if x_impurities[best_x_split] > y_impurities[best_y_split]:
-                    return ('x', best_x_split)
-                else:
-                    return ('y', best_y_split)
+            else:
+                return ('y', best_y_split)
                     
 class DecisionTree:
     def __init__(self, data_points, max_depth, min_split_size):
@@ -225,7 +224,7 @@ class DecisionTree:
                         current_node = current_node.children[0]
                     elif current_node.best_split[1] < x:
                         current_node = current_node.children[1]
-                    else: 
+                    else:
                         return current_node.prediction
 
                 elif current_node.best_split[0] == 'y':
@@ -233,7 +232,9 @@ class DecisionTree:
                         current_node = current_node.children[0]
                     elif current_node.best_split[1] < y:
                         current_node = current_node.children[1]
-                    else: 
+                    else:
                         return current_node.prediction
                 else:
                     return current_node.prediction
+
+
