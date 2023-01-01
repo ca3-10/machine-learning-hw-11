@@ -143,8 +143,9 @@ class Node:
                     return ('y', best_y_split)
                     
 class DecisionTree:
-    def __init__(self, data_points, max_depth):
+    def __init__(self, data_points, max_depth, min_split_size):
         self.max_depth = max_depth
+        self.min_split_size = min_split_size
         self.data_points = data_points
         self.root = Node(data_points)
         self.nodes = self.build_tree()
@@ -160,10 +161,12 @@ class DecisionTree:
         while len(stack.elements) != 0:
  
             current_node = stack.elements[-1]
-
             if current_node.pure == True: 
                 continue
             if current_node.depth == self.max_depth:
+                continue
+            if len(current_node.data_points) <= self.min_split_size:
+                stack.pop()
                 continue
 
             stack.pop()
@@ -192,10 +195,13 @@ class DecisionTree:
                 current_node.children.append(child)
                 child.parent = current_node
 
-                #if child is pure or max depth is reached don't split
                 if child.pure == True: 
                     continue
                 if child.depth == self.max_depth:
+                    continue
+                if len(current_node.data_points) <= self.min_split_size:
+                    print('min split size', self.min_split_size)
+                    print('current len', len(current_node.data_points))
                     continue
                 stack.push(child)
             
@@ -231,38 +237,3 @@ class DecisionTree:
                         return current_node.prediction
                 else:
                     return current_node.prediction
-
-data_values = [
-    ['Shortbread',0.15,0.2],
-        ['Shortbread',0.15,0.3],
-        ['Shortbread',0.2,0.25],
-        ['Shortbread',0.25,0.4],
-        ['Shortbread',0.3,0.35],
-        ['Sugar',0.05,0.25],
-        ['Sugar',0.05,0.35],
-        ['Sugar',0.1,0.3],
-        ['Sugar',0.15,0.4],
-        ['Sugar',0.25,0.35]]
-
-
-
-k = 0
-current_point = data_values[k]
-current_point_classification = current_point[0]
-print(current_point)
-
-data_values.pop(k)
-tree = DecisionTree(data_values, 3)
-for nodes in tree.nodes: 
-    print(nodes.path)
-    print(nodes.prediction)
-
-prediction = tree.predict([current_point[1], current_point[2]])
-    
-    
-if current_point_classification == prediction:
-    print('correct')
-        
-
-    
-
