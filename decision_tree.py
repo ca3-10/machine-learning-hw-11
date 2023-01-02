@@ -1,4 +1,3 @@
-import random
 class Stack:
     def __init__(self):
         self.elements = []
@@ -239,4 +238,3 @@ class DecisionTree:
                         return current_node.prediction
                 else:
                     return current_node.prediction
-
