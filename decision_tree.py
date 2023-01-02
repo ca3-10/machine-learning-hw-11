@@ -30,6 +30,7 @@ class Node:
         self.depth = 1
 
         self.pure = False
+        # if the nodes is pure skip the rest of the calculations
         if self.shortbread_counts == self.num_data_points or self.sugar_counts == self.num_data_points:
             self.pure = True
             return
@@ -125,13 +126,14 @@ class Node:
 
             y_impurities[y] = self.g_before - g_after
 
-
         if len(x_splits) == 0:
             best_y_split = max(y_impurities, key=y_impurities.get)
             return ('y', best_y_split)
+
         elif len(y_splits) == 0:
             best_x_split = max(x_impurities, key=x_impurities.get)
             return ('x', best_x_split)
+
         else: 
             best_x_split = max(x_impurities, key=x_impurities.get)
             best_y_split = max(y_impurities, key=y_impurities.get)
@@ -155,9 +157,10 @@ class DecisionTree:
         stack.push(self.root)
         nodes = {self.root: []}
 
+        # if the root is pure theres no tree to build
         if self.root.pure == True:
             return nodes
-
+            
         if self.max_depth == 1: 
             return nodes
     
@@ -219,22 +222,29 @@ class DecisionTree:
             if current_node.children == []:
                 return current_node.prediction
 
+            #check best split is the attribute not method
             if type(current_node.best_split) == tuple:
                 
                 if current_node.best_split[0] == 'x':
                     if current_node.best_split[1] >= x:
+                        #move down the left node 
                         current_node = current_node.children[0]
                     elif current_node.best_split[1] < x:
+                        #move down the right node 
                         current_node = current_node.children[1]
                     else:
+                        #if the conditions not met return current nodes prediction
                         return current_node.prediction
 
                 elif current_node.best_split[0] == 'y':
                     if current_node.best_split[1] >= y:
+                        #move down the left node 
                         current_node = current_node.children[0]
                     elif current_node.best_split[1] < y:
+                        #move down the right node 
                         current_node = current_node.children[1]
                     else:
+                        #if condition not met return current ndoe prediction 
                         return current_node.prediction
                 else:
                     return current_node.prediction
