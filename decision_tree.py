@@ -239,3 +239,4 @@ class DecisionTree:
                         return current_node.prediction
                 else:
                     return current_node.prediction
+
