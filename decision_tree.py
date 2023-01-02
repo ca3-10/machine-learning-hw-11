@@ -1,3 +1,4 @@
+import random
 class Stack:
     def __init__(self):
         self.elements = []
@@ -147,12 +148,16 @@ class DecisionTree:
         self.min_split_size = min_split_size
         self.data_points = data_points
         self.root = Node(data_points)
+
         self.nodes = self.build_tree()
            
     def build_tree(self):
         stack = Stack()
         stack.push(self.root)
         nodes = {self.root: []}
+
+        if self.root.pure == True:
+            return nodes
 
         if self.max_depth == 1: 
             return nodes
@@ -199,8 +204,6 @@ class DecisionTree:
                 if child.depth == self.max_depth:
                     continue
                 if len(current_node.data_points) <= self.min_split_size:
-                    print('min split size', self.min_split_size)
-                    print('current len', len(current_node.data_points))
                     continue
                 stack.push(child)
             
@@ -238,3 +241,55 @@ class DecisionTree:
                     return current_node.prediction
 
 
+data_values = [
+    ['Shortbread',0.15,0.2],
+        ['Shortbread',0.15,0.3],
+        ['Shortbread',0.2,0.25],
+        ['Shortbread',0.25,0.4],
+        ['Shortbread',0.3,0.35],
+        ['Sugar',0.05,0.25],
+        ['Sugar',0.05,0.35],
+        ['Sugar',0.1,0.3],
+        ['Sugar',0.15,0.4],
+        ['Sugar',0.25,0.35]]
+
+#4 leave one out cross validation curve for random forest
+
+def random_forest(data_points, num_trees, max_depth, min_split_size):
+    trees = []
+    for i in range(num_trees):
+        sample = random.sample(data_points, 5)
+        print(sample)
+        tree = DecisionTree(sample, max_depth, min_split_size)
+        trees.append(tree)
+    return trees
+
+def random_forest_predict(forest, data_point):
+    predictions = []
+    for tree in forest:
+        prediction = tree.predict(data_point)
+        predictions.append(prediction)
+    return max(predictions, key=predictions.count)
+
+leave_out_forest_dict = {}
+
+for num_tree in range(1, 11):
+    leave_out_forest_dict[num_tree] = 0
+
+    for i in range(len(data_values)):
+        current_data_point = data_values[i]
+        current_classification = current_data_point[0]
+
+        data_values.pop(i)
+
+        forest = random_forest(data_values, num_tree, 10, 1)
+        prediction = random_forest_predict(forest, current_data_point[1:])
+
+        if prediction == current_classification:
+            print('Correct')
+            leave_out_forest_dict[num_tree] += 1
+    
+        data_values.insert(i, current_data_point)
+
+leave_out_forest_accuracy = [leave_out_forest_dict[i]/len(data_values) for i in range(1, 11)]
+print(leave_out_forest_accuracy)
