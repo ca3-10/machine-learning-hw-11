@@ -239,18 +239,3 @@ class DecisionTree:
                         return current_node.prediction
                 else:
                     return current_node.prediction
-
-
-data_values = [
-    ['Shortbread',0.15,0.2],
-        ['Shortbread',0.15,0.3],
-        ['Shortbread',0.2,0.25],
-        ['Shortbread',0.25,0.4],
-        ['Shortbread',0.3,0.35],
-        ['Sugar',0.05,0.25],
-        ['Sugar',0.05,0.35],
-        ['Sugar',0.1,0.3],
-        ['Sugar',0.15,0.4],
-        ['Sugar',0.25,0.35]]
-
-#4 leave one out cross validation curve for random forest
