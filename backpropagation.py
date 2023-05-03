@@ -36,6 +36,7 @@ class BackProp:
             self.h.append(self.sigmoid(self.input[-1]))
         
         self.predication = self.h[-1]
+
         return self.h[-1] 
 
     def back_prop(self): 
@@ -49,7 +50,6 @@ class BackProp:
             self.rss_h.append(self.A[i].transpose() @ (self.rss_h[2-i] * self.sigmoid_prime(self.input[i+1])))
         
         self.rss_h.reverse()
-
 
     def weight_gradients(self): 
         self.back_prop()
@@ -73,8 +73,8 @@ class GradientDescent:
         self.points = points
         self.A = intial_A
         self.b = intial_b
-        self.y_values = [point[1] for point in points] 
-        self.predications = []
+        self.y_values = [point[1] for point in points]
+        self.predications = [] 
 
         self.alpha = np.array([[0.01]])
 
@@ -87,6 +87,7 @@ class GradientDescent:
 
             prop = BackProp(self.A, self.b, self.points[i])
             prop.weight_gradients()
+            
             self.predications.append(prop.predication)
 
             if i == 0: 
@@ -120,16 +121,30 @@ class GradientDescent:
         self.A = updated_A
         self.b = updated_b
     
-
+    def calc_rss(self): 
+        rss = sum([(self.predications[i] - self.y_values[i]) ** 2 for i in range(len(self.predications))])
+        return rss
+    
     def iterations(self, num_interations): 
+        self.all_rss = []
+        self.all_predictions = []
         for i in range(num_interations):
+           
             self.gradient_descent()
+            rss = self.calc_rss()
+
+            self.all_rss.append(rss)
+            self.all_predictions.append(self.predications)
+
+            #print(rss)
+            #print(self.predications)
+
+            #reset predications
+            self.predications = []
         
 
-        print(self.A)
-        print(self.b)
-
-        print(self.predications)
+        #print(self.A)
+        #print(self.b)
 
     
 
@@ -140,7 +155,7 @@ A = [np.array([[5], [-5], [5], [-5]]), np.array([[10,10,0,0], [0,0,10,10]]), np.
 B = [np.array([[-0.75], [1.75], [-3.25], [4.25]]), np.array([[-12.5], [-12.5]]), np.array([[-2.5]])]
 
 grad = GradientDescent(points, A, B)
-grad.iterations(1)
+grad.iterations(100)
 
 
 
