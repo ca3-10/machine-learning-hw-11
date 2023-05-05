@@ -143,9 +143,7 @@ class GradientDescent:
             self.predications = []
         
 
-        #print(self.A)
-        #print(self.b)
-
+        return self.all_predictions[-1]
     
 
 
@@ -155,7 +153,7 @@ A = [np.array([[5], [-5], [5], [-5]]), np.array([[10,10,0,0], [0,0,10,10]]), np.
 B = [np.array([[-0.75], [1.75], [-3.25], [4.25]]), np.array([[-12.5], [-12.5]]), np.array([[-2.5]])]
 
 grad = GradientDescent(points, A, B)
-grad.iterations(100)
+print(grad.iterations(100))
 
 
 
