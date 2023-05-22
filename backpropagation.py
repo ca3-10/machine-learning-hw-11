@@ -33,6 +33,7 @@ class BackProp:
                 self.input[-1] += ((self.A[i] * self.h[i]) + self.b[i])
             else: 
                 self.input[-1] += ((self.A[i] @ self.h[i]) + self.b[i])
+            
             self.h.append(self.sigmoid(self.input[-1]))
         
         self.predication = self.h[-1]
